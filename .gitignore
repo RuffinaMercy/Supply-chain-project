@@ -1,0 +1,29 @@
+# Python Environments
+.venv/
+venv/
+env/
+
+# Python Caches
+__pycache__/
+*.pyc
+
+# dbt Generated Folders
+supply_chain_project/dbt_packages/
+supply_chain_project/logs/
+supply_chain_project/target/
+
+# MLflow Generated Folders
+mlruns/
+mlartifacts/
+
+# Local Data and Logs
+logs/
+default/
+
+# IDE / OS specific
+.vscode/
+.idea/
+.DS_Store
+
+# Temporary files from dbt
+supply_chain_project/package-lock.yml

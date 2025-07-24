@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: m5_raw_data
+    database: M5_FORECASTING
+    schema: RAW_DATA
+    tables:
+      - name: SALES_TRAIN_EVALUATION
+      - name: CALENDAR
+      - name: SELL_PRICES  # <-- This is the name dbt is looking for

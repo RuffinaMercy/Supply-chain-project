@@ -1,0 +1,33 @@
+# dbt_project.yml
+
+name: 'supply_chain_project'
+version: '1.0.0'
+config-version: 2
+
+# This is the name of the profile in your profiles.yml file.
+profile: 'default' # This should match the name in your ~/.dbt/profiles.yml
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# This configures how dbt builds your models.
+models:
+  supply_chain_project:
+    # All models in the 'marts' folder will be built as tables.
+    marts:
+      +materialized: table
+    # All models in the 'staging' folder will be built as views.
+    staging:
+      +materialized: view
+    # All models in the 'intermediate' folder will be built as views.
+    intermediate:
+      +materialized: view

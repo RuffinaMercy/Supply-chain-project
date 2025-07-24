@@ -27,3 +27,7 @@ default/
 
 # Temporary files from dbt
 supply_chain_project/package-lock.yml
+
+
+# Ignore secrets file
+config.toml

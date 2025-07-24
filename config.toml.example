@@ -1,0 +1,11 @@
+# config.toml.example
+# Copy this file to config.toml and fill in your own Snowflake credentials.
+# The config.toml file is ignored by Git and should NOT be committed.
+[connection]
+account = "<your_snowflake_account_identifier>"
+user = "<your_snowflake_user>"
+password = "<your_snowflake_password>"
+role = "<your_snowflake_role>"
+warehouse = "ML_TRAINING_WH"
+database = "M5_FORECASTING"
+schema = "DBT_DEV"

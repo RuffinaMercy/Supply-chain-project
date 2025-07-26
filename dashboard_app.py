@@ -52,8 +52,8 @@ def create_session():
             st.error(f"Failed to connect to Snowflake. Error: {e2}")
             return None
         
-        
-# session = create_session()
+
+session = create_session()
 
 if not session:
     st.info("Please check your Snowflake connection configuration in config.toml.")

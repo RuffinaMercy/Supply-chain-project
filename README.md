@@ -1,5 +1,7 @@
 # M5 Demand Forecasting and Inventory Optimization Pipeline
 
+[![DBT CI Pipeline](https://github.com/RuffinaMercy/Supply-chain-project/actions/workflows/.ci.yml/badge.svg)](https://github.com/RuffinaMercy/Supply-chain-project/actions/workflows/.ci.yml)
+
 This project demonstrates a complete, end-to-end pipeline for forecasting retail sales demand using the M5 competition dataset and calculating inventory control parameters. The entire pipeline is built using a modern data stack: **dbt, Snowflake, Snowpark, MLflow, and Streamlit.**
 
 ## 📊 Dashboard Preview

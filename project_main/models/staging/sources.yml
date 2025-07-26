@@ -1,3 +1,15 @@
+# version: 2
+
+# sources:
+#   - name: m5_raw_data
+#     database: M5_FORECASTING
+#     schema: RAW_DATA
+#     tables:
+#       - name: SALES_TRAIN_EVALUATION
+#       - name: CALENDAR
+#       - name: SELL_PRICES  # <-- This is the name dbt is looking for
+
+# project_main/models/staging/sources.yml
 version: 2
 
 sources:
@@ -6,5 +18,17 @@ sources:
     schema: RAW_DATA
     tables:
       - name: SALES_TRAIN_EVALUATION
+        # ADD THIS 'columns' SECTION
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
       - name: CALENDAR
-      - name: SELL_PRICES  # <-- This is the name dbt is looking for
+        # ADD THIS 'columns' SECTION
+        columns:
+          - name: d
+            tests:
+              - unique
+              - not_null
+      - name: SELL_PRICES

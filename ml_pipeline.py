@@ -3,6 +3,7 @@ import toml
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col, lit, when
 import mlflow
+import os # <-- Import the os module
 
 # --- Configuration ---
 DBT_MART_TABLE = "MART_SALES_WITH_FEATURES"
@@ -46,7 +47,17 @@ def main():
     for c in cols_to_fill:
         processed_df = processed_df.with_column(c, when(col(c).is_null(), lit(0)).otherwise(col(c)))
 
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    # --- Smart MLflow URI Configuration ---
+    # Check if we are running inside an Airflow container (Airflow sets this variable)
+    if os.getenv("AIRFLOW_HOME"):
+        print("Running in Airflow container, using Docker host for MLflow.")
+        # Use the special DNS name to connect from a container to the host machine
+        mlflow_tracking_uri = "http://host.docker.internal:5000"
+    else:
+        print("Running locally, using localhost for MLflow.")
+        mlflow_tracking_uri = "http://127.0.0.1:5000"
+
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
     mlflow.set_experiment("M5 Demand Forecasting")
 
     with mlflow.start_run() as run:
@@ -60,7 +71,8 @@ def main():
 
         # 1. TRAIN THE MODEL
         print("Training model using Snowflake ML...")
-        train_df = processed_df.filter(f"DAY_NUM <= {TRAINING_CUTOFF_DAY}")
+        # Use .sample() to train on a random 30% of the data to manage memory
+        train_df = processed_df.filter(f"DAY_NUM <= {TRAINING_CUTOFF_DAY}").sample(frac=0.3)
 
         from snowflake.ml.modeling.xgboost import XGBRegressor
         

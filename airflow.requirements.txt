@@ -1,0 +1,8 @@
+# airflow.requirements.txt
+# Versions pinned for a Python 3.11 environment
+apache-airflow-providers-snowflake==5.6.0
+dbt-snowflake==1.7.2  # Using a slightly older dbt for broader compatibility
+snowflake-ml-python==1.5.2 # This will now work on Python 3.11
+mlflow>=2.10.0
+toml==0.10.2
+pendulum==3.0.0

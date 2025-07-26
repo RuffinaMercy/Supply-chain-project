@@ -1,0 +1,69 @@
+name: DBT CI Pipeline
+
+# This tells GitHub WHEN to run the robot.
+# It will run on any push or pull request to the 'main' branch.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # We define a single job called 'run-dbt-tests'
+  run-dbt-tests:
+    # The robot will run on a standard, fresh Ubuntu Linux machine provided by GitHub
+    runs-on: ubuntu-latest
+    
+    # These are the steps the robot will perform in order
+    steps:
+      # Step 1: Download your code from the repository
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      # Step 2: Set up a Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Step 3: Install the dbt-snowflake library
+      - name: Install dependencies
+        run: |
+          pip install dbt-snowflake
+
+      # Step 4: Create the dbt profiles.yml file using the secrets we stored in GitHub
+      - name: Create dbt profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          echo "
+          default:
+            target: dev
+            outputs:
+              dev:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: ${{ secrets.SNOWFLAKE_ROLE }}
+                database: ${{ secrets.SNOWFLAKE_DATABASE }}
+                warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+                schema: ci_cd_tests # Use a separate schema so CI/CD doesn't interfere with your dev work
+                threads: 4
+          " > ~/.dbt/profiles.yml
+
+      # Step 5: Install the dbt packages (like dbt_utils)
+      - name: Run dbt deps
+        run: dbt deps
+        working-directory: ./project_main # Run this command inside the dbt folder
+
+      # Step 6: Test the connection to Snowflake
+      - name: Run dbt debug
+        run: dbt debug
+        working-directory: ./project_main
+
+      # Step 7: Run the actual data quality tests
+      - name: Run dbt tests
+        run: dbt test
+        working-directory: ./project_main

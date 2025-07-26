@@ -14,19 +14,46 @@ st.set_page_config(
 
 # --- Snowflake Connection ---
 # Use st.cache_resource to only create the connection once
+
+# @st.cache_resource
+# def create_session():
+#     try:
+#         with open('config.toml', 'r') as f:
+#             connection_params = toml.load(f)['connection']
+#         session = Session.builder.configs(connection_params).create()
+#         print("New Snowpark session created.")
+#         return session
+#     except Exception as e:
+#         st.error(f"Error connecting to Snowflake: {e}")
+#         return None
+
+
+
+
 @st.cache_resource
 def create_session():
+    # First, try to connect using Streamlit's secrets management for cloud deployment
     try:
-        with open('config.toml', 'r') as f:
-            connection_params = toml.load(f)['connection']
+        # st.secrets reads from the secrets you will set up on the Streamlit Cloud website
+        connection_params = st.secrets["snowflake"]
         session = Session.builder.configs(connection_params).create()
-        print("New Snowpark session created.")
+        print("Connected to Snowflake using Streamlit secrets.")
         return session
-    except Exception as e:
-        st.error(f"Error connecting to Snowflake: {e}")
-        return None
-
-session = create_session()
+    except Exception as e1:
+        # If cloud secrets aren't found, fall back to the local config.toml for local development
+        print(f"Streamlit secrets not found ({e1}), trying local config.toml.")
+        try:
+            with open('config.toml', 'r') as f:
+                connection_params = toml.load(f)['connection']
+            session = Session.builder.configs(connection_params).create()
+            print("Connected to Snowflake using local config.toml.")
+            return session
+        except Exception as e2:
+            st.error(f"Failed to connect to Snowflake. Error: {e2}")
+            return None
+        
+        
+# session = create_session()
 
 if not session:
     st.info("Please check your Snowflake connection configuration in config.toml.")
